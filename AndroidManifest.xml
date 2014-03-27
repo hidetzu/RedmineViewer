@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.redmine"
+    android:versionCode="1"
+    android:versionName="0.0.1" >
+
+    <uses-sdk
+        android:minSdkVersion="16"
+        android:targetSdkVersion="17" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@android:style/Theme.Black.NoTitleBar" >
+        <activity
+            android:name="com.redmine.ui.BootActivity"
+            android:noHistory="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.redmine.ui.LoginActivity"
+            android:configChanges="orientation"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.redmine.ticketlist.TicketActivity"
+            android:label="@string/title_activity_ticket" >
+        </activity>
+        <activity
+            android:name="com.redmine.ticketdetail.TicketDetailActivity"
+            android:label="@string/title_activity_ticket_detail" >
+        </activity>
+        <activity
+            android:name="com.redmine.ui.MenuActivity"
+            android:label="@string/title_activity_main" >
+        </activity>
+        <activity
+            android:name="com.redmine.ui.AboutApplicationActivity"
+            android:label="@string/title_activity_about_application" >
+        </activity>
+    </application>
+
+</manifest>
