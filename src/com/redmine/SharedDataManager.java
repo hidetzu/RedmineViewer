@@ -1,7 +1,7 @@
 package com.redmine;
 
 public class SharedDataManager {
-	private static SharedDataManager sInstance = new SharedDataManager();
+	private static SharedDataManager sInstance;
 	private String mApiKey;
 	private Acount mAcount;
 	
@@ -10,6 +10,8 @@ public class SharedDataManager {
 	}
 	
 	public static SharedDataManager getInstance() {
+		if( sInstance == null )
+			sInstance = new SharedDataManager();
 		return sInstance;
 	}
 	
