@@ -92,6 +92,7 @@ public class LoginActivity extends Activity
 		Intent intent = getIntent();
 		mLoginMode = intent.getBooleanExtra("LoginMode", false);
 	}
+
 	
 	@Override
 	protected void onResume() {
