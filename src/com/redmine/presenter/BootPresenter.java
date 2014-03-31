@@ -1,7 +1,7 @@
 package com.redmine.presenter;
 
-import com.redmine.Acount;
-import com.redmine.SharedDataManager;
+import com.redmine.data.Acount;
+import com.redmine.data.SharedDataManager;
 import com.redmine.database.AcountDatabase;
 import com.redmine.ui.IBootView;
 

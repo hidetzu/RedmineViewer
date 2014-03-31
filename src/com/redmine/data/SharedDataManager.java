@@ -1,4 +1,4 @@
-package com.redmine;
+package com.redmine.data;
 
 public class SharedDataManager {
 	private static SharedDataManager sInstance;

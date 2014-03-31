@@ -1,4 +1,4 @@
-package com.redmine;
+package com.redmine.data;
 
 import java.io.Serializable;
 

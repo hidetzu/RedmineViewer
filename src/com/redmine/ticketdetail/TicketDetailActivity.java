@@ -26,9 +26,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.redmine.Acount;
+import com.redmine.data.Acount;
 import com.redmine.R;
-import com.redmine.SharedDataManager;
+import com.redmine.data.SharedDataManager;
 import com.redmine.TicketDetailData;
 import com.redmine.http.GetRequest;
 import com.redmine.http.PutRequest;

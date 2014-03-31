@@ -1,7 +1,7 @@
 
 package com.redmine.database;
 
-import com.redmine.Acount;
+import com.redmine.data.Acount;
 
 import android.content.ContentValues;
 import android.content.Context;

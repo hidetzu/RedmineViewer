@@ -1,6 +1,6 @@
 package com.redmine.presenter;
 
-import com.redmine.*;
+import com.redmine.data.*;
 import com.redmine.database.*;
 import com.redmine.ui.*;
 

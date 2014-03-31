@@ -20,9 +20,9 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.redmine.Acount;
+import com.redmine.data.Acount;
 import com.redmine.R;
-import com.redmine.SharedDataManager;
+import com.redmine.data.SharedDataManager;
 import com.redmine.http.GetRequest;
 import com.redmine.http.RequestURLFactory;
 import com.redmine.http.RequestURLFactory.RequestType;

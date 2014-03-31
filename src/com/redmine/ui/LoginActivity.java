@@ -15,7 +15,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.redmine.Acount;
+import com.redmine.data.Acount;
 import com.redmine.R;
 import com.redmine.database.AcountDatabase;
 import com.redmine.database.AcountDatabaseHelper;
