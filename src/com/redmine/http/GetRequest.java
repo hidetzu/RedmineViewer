@@ -10,7 +10,7 @@ import org.apache.http.params.HttpParams;
 
 import android.util.*;
 
-public class GetRequest {
+public class GetRequest implements Request {
 	private HttpClient mHttpClient;
 	private String mURL;
 	

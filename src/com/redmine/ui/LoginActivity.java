@@ -2,6 +2,10 @@ package com.redmine.ui;
 
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.client.HttpClient;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -16,6 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.redmine.data.Acount;
+import com.redmine.http.*;
 import com.redmine.R;
 import com.redmine.database.AcountDatabase;
 import com.redmine.database.AcountDatabaseHelper;
@@ -125,12 +130,35 @@ public class LoginActivity extends Activity
 	public void onClick(View v) {
 		login();
 	}
+
+	private String createURL(String action, Acount acount) {
+		return acount.getServer() + action;
+	}
+
+	private Request createPostRequest(HttpClient httpClient, Acount acount) {
+		String url = createURL("/login", acount);
+		ArrayList <NameValuePair> params = new ArrayList <NameValuePair>();
+		params.add( new BasicNameValuePair("username", acount.getUsername()));
+		params.add( new BasicNameValuePair("password", acount.getPassword()));
+
+		return new PostRequest(httpClient, url, params);
+	}
+
+	private Request creatGetRequest(HttpClient httpClient, Acount acount) {
+		String url = createURL("/my/account", acount);
+		return new GetRequest(httpClient, url);
+	}
 	
 	private void login() {
 		showDlg();
 		Acount acount = mAcountPresenter.getAcount();
 		LoginResponseHandler handler = new LoginResponseHandler(mAcountPresenter, this);
-		LoginThread thread = new LoginThread(handler, acount.getServer(), acount.getUsername(), acount.getPassword());
+
+		HttpClient httpClient = HttpClientFactory.createHttpClient();
+		Request post = createPostRequest(httpClient, acount);
+		Request  get  = creatGetRequest(httpClient, acount);
+
+		LoginThread thread = new LoginThread(handler, post, get);
 		thread.start();
 	}
 

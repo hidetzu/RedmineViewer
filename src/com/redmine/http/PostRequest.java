@@ -12,7 +12,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.params.*;
 
-public class PostRequest {
+public class PostRequest implements Request {
 
 	private HttpClient mHttpClient;
 	private String     mURL;
