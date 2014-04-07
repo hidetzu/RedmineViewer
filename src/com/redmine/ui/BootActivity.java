@@ -19,25 +19,25 @@ public class BootActivity extends Activity
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		createDesktopShortCut(this);
+		
 		mBootPresenter = new BootPresenter(this, AcountDatabaseHelper.getInstance(this));
-		createDesktopShorCut(this);
 		mBootPresenter.moveToLoginView();
 	}
-	
-	private void createDesktopShorCut(Context context) {
-		Intent targetIntent = new Intent(Intent.ACTION_MAIN);
-		targetIntent.setClassName(context, "com.redmine.ui.BootActivity");
-		
-		Intent i = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
-		i.putExtra(Intent.EXTRA_SHORTCUT_INTENT, targetIntent);
-		
-		//2. アイコン画像とタイトルを設定
-		Parcelable icon = Intent.ShortcutIconResource.fromContext(context, R.drawable.ic_launcher);
-		i.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, icon);
-		i.putExtra(Intent.EXTRA_SHORTCUT_NAME, getResources().getString(R.string.app_name));
 
-		//3. 1～2で作成したIntentをBroadcastしてOSに依頼
-		context.sendBroadcast(i);
+	private void createDesktopShortCut(Context context) {
+		Intent shortcutIntent = new Intent();
+		shortcutIntent.setClassName("com.redmine.ui", getClass().getName());
+		shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+		Intent intent = new Intent();
+		intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
+		intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, "RedmineViwer");
+		Parcelable iconResource = Intent.ShortcutIconResource.fromContext(context, R.drawable.ic_launcher);
+		intent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, iconResource);
+		intent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+		context.sendBroadcast(intent);
 	}
 	
 	@Override
