@@ -14,7 +14,7 @@ import org.apache.http.params.HttpParams;
 
 import android.util.Log;
 
-public class PutRequest {
+public class PutRequest implements Request{
 	private String mURL;
 	private HttpClient mHttpClient;
 	private HashMap<String, String> mHeader;

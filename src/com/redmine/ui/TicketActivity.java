@@ -1,10 +1,10 @@
-package com.redmine.ticketlist;
+package com.redmine.ui;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-
-import org.apache.http.impl.client.DefaultHttpClient;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import android.app.Activity;
 import android.content.Context;
@@ -20,13 +20,13 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.redmine.data.Acount;
 import com.redmine.R;
+import com.redmine.data.Acount;
 import com.redmine.data.SharedDataManager;
-import com.redmine.http.GetRequest;
 import com.redmine.http.RequestURLFactory;
 import com.redmine.http.RequestURLFactory.RequestType;
-import com.redmine.service.TicketListThread;
+import com.redmine.service.TicketListService;
+import com.redmine.ticketlist.TicketItem;
 
 public class TicketActivity extends Activity {	
 	
@@ -44,7 +44,7 @@ public class TicketActivity extends Activity {
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-			case TicketListThread.OK:
+			case TicketListService.TICKETLIST_OK:
 				ArrayList<TicketItem> result = ((ArrayList<TicketItem>)msg.obj);
 				Iterator<TicketItem> i = result.iterator();
 				while(i.hasNext()) {
@@ -52,7 +52,7 @@ public class TicketActivity extends Activity {
 				}
 				mAdapter.notifyDataSetChanged();
 				break;
-			case TicketListThread.NG:
+			case TicketListService.TICKETLIST_NG:
 				Toast toast = Toast.makeText(mContext, "サーバエラーが発生しました", Toast.LENGTH_SHORT);
 				toast.setGravity(Gravity.CENTER, 0, 0);
 				toast.show();
@@ -70,13 +70,13 @@ public class TicketActivity extends Activity {
 	private Acount mAcount;
 	private UpdateTickeListHandler mHandler;
 	private SharedDataManager mSharedDataManager = SharedDataManager.getInstance();
+	ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_ticket);
 
-		Intent intent = getIntent();
 		mApikey = mSharedDataManager.getAPIKey();
     	mAcount = mSharedDataManager.getAcount();
 		
@@ -97,10 +97,7 @@ public class TicketActivity extends Activity {
     	
     	mHandler = new UpdateTickeListHandler(mTicketAdapter, this);
 
-		GetRequest getRequest = new GetRequest(new DefaultHttpClient(), createURL(mAcount.getServer(), mApikey));
-
-		TicketListThread thread = new TicketListThread(getRequest, mHandler);
-		thread.start();
+    	mExecutorService.execute(new TicketListService(mHandler, mAcount, mApikey));
 	}
 
 	
@@ -124,6 +121,7 @@ public class TicketActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		mExecutorService.shutdown();
 	}
 
 	private void moveToNextView(String apiKey, int ticketId, Acount acount ) {

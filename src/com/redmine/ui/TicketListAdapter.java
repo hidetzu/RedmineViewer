@@ -1,8 +1,9 @@
-package com.redmine.ticketlist;
+package com.redmine.ui;
 
 import java.util.*;
 
 import com.redmine.R;
+import com.redmine.ticketlist.TicketItem;
 import com.redmine.util.StringHelper;
 
 import android.content.Context;

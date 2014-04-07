@@ -41,7 +41,7 @@ public class MenuActivity extends ListActivity {
         ArrayList<MenuItemInfo> list =
         		new ArrayList<MenuActivity.MenuItemInfo>();
         list.add(new MenuItemInfo("チケット一覧画面",
-        			createIntent("com.redmine.ticketlist", "TicketActivity")));
+        			createIntent("com.redmine.ui", "TicketActivity")));
         list.add(new MenuItemInfo("このアプリについて",
         			createIntent("com.redmine.ui", "AboutApplicationActivity")));
         return list;

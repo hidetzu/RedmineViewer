@@ -1,60 +1,15 @@
-package com.redmine.service;
+package com.redmine.ticketlist;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Collections;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import android.os.Handler;
-import android.os.Message;
-
-import com.redmine.http.GetRequest;
-import com.redmine.ticketlist.TicketItem;
-import com.redmine.ticketlist.TicketItemComparator;
-
-public class TicketListThread extends Thread{
-	public static final int OK = 1;
-	public static final int NG = 2;
-	
-	
-	private GetRequest  mGet;
-	private Handler     mHandler;
-
-	public TicketListThread(GetRequest get, Handler handler) {
-		mGet = get;
-		this.mHandler = handler;
-		this.mGet = get;
-	}
-	
-	public void run() {
-		String result = this.mGet.execute();
-		if(result != null ) {
-			ArrayList<TicketItem> list;
-			try {
-				list = parseXml(result);
-				Collections.sort(list, new TicketItemComparator());
-				Message msg = mHandler.obtainMessage(OK);
-				msg.obj = list;
-				mHandler.sendMessage(msg);
-				
-			} catch (XmlPullParserException e) {
-				Message msg = mHandler.obtainMessage(NG);
-				mHandler.sendMessage(msg);
-			} catch (IOException e) {
-				Message msg = mHandler.obtainMessage(NG);
-				mHandler.sendMessage(msg);
-			}
-		} else {
-			Message msg = mHandler.obtainMessage(NG);
-			mHandler.sendMessage(msg);
-		}
-	}
-
-	private ArrayList<TicketItem> parseXml(String dataBody) throws XmlPullParserException, IOException {
+public class TicketListPaserImplimention implements TicketListPaser, TicketListPaserFactory {
+	public ArrayList<TicketItem> parse(String dataBody) throws XmlPullParserException, IOException {
 		//XMLパーサーを生成する
 		final XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
 		final XmlPullParser parser = factory.newPullParser();
@@ -98,9 +53,6 @@ public class TicketListThread extends Thread{
 					break;
 				case XmlPullParser.END_TAG:
 					if(parser.getName().equals("issue")) {
-						if( result == null ) {
-							result = new ArrayList<TicketItem>();
-						}
 						result.add(item);
 					}
 					break;
@@ -111,5 +63,10 @@ public class TicketListThread extends Thread{
 			eventType = parser.next();
 		}
 		return result;
+	}
+
+	@Override
+	public TicketListPaser newInstance() {
+		return new TicketListPaserImplimention();
 	}
 }
