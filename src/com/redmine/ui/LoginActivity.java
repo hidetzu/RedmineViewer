@@ -2,10 +2,8 @@ package com.redmine.ui;
 
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.client.HttpClient;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -19,20 +17,20 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.redmine.data.Acount;
-import com.redmine.http.*;
 import com.redmine.R;
+import com.redmine.data.Acount;
 import com.redmine.database.AcountDatabase;
 import com.redmine.database.AcountDatabaseHelper;
 import com.redmine.dialog.AlertDialogFragment;
 import com.redmine.dialog.ProgressDialogFragment;
 import com.redmine.presenter.LoginPresenter;
-import com.redmine.service.LoginThread;
+import com.redmine.service.LoginService;
 
 public class LoginActivity extends Activity
 	implements OnClickListener, ILoginView{
 
 	private String TAG = LoginActivity.class.getName();
+	ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
 	
 	private EditText mServerURLEditText;
 	private EditText mLoginEditText;
@@ -61,16 +59,16 @@ public class LoginActivity extends Activity
 			
 			activity.hidenDlg();
 			switch (msg.what) {
-			case LoginThread.LOGIN_SUCCESS:
+			case LoginService.LOGIN_SUCCESS:
 				String apiKey = (String)msg.obj;
 				mAcountPresenter.saveAcount();
 				mAcountPresenter.saveAPIKey(apiKey);
 				mAcountPresenter.moveToNextView();
 				break;
-			case LoginThread.LOGIN_ACOUNT_ERROR:
+			case LoginService.LOGIN_ACOUNT_ERROR:
 				mAcountPresenter.showErrDlg("アクセスエラー", "ログイン名もしくはパスワード名が間違っています");
 				break;
-			case LoginThread.LOGIN_SERVER_ERROR:
+			case LoginService.LOGIN_SERVER_ERROR:
 				mAcountPresenter.showErrDlg("アクセスエラー", "サーバーにアクセスできません。");
 				break;
 			default:
@@ -131,35 +129,13 @@ public class LoginActivity extends Activity
 		login();
 	}
 
-	private String createURL(String action, Acount acount) {
-		return acount.getServer() + action;
-	}
-
-	private Request createPostRequest(HttpClient httpClient, Acount acount) {
-		String url = createURL("/login", acount);
-		ArrayList <NameValuePair> params = new ArrayList <NameValuePair>();
-		params.add( new BasicNameValuePair("username", acount.getUsername()));
-		params.add( new BasicNameValuePair("password", acount.getPassword()));
-
-		return new PostRequest(httpClient, url, params);
-	}
-
-	private Request creatGetRequest(HttpClient httpClient, Acount acount) {
-		String url = createURL("/my/account", acount);
-		return new GetRequest(httpClient, url);
-	}
 	
 	private void login() {
 		showDlg();
 		Acount acount = mAcountPresenter.getAcount();
 		LoginResponseHandler handler = new LoginResponseHandler(mAcountPresenter, this);
 
-		HttpClient httpClient = HttpClientFactory.createHttpClient();
-		Request post = createPostRequest(httpClient, acount);
-		Request  get  = creatGetRequest(httpClient, acount);
-
-		LoginThread thread = new LoginThread(handler, post, get);
-		thread.start();
+		mExecutorService.execute(new LoginService(handler, acount));
 	}
 
 	private void showDlg() {
@@ -176,10 +152,11 @@ public class LoginActivity extends Activity
 	
 	@Override
 	protected void onDestroy() {
+		super.onDestroy();
 		Log.d(TAG, "onDestroy");
 		mAcountPresenter.saveAcount();
 		mAcountPresenter.saveAcountDB();
-		super.onDestroy();
+		mExecutorService.shutdown();
 	}
 
 	@Override
